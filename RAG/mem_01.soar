@@ -1,0 +1,19 @@
+# teste-smem-simples.soar
+# Exemplo MÍNIMO - Semantic Memory
+# print @ imprime todo o conteúdo
+
+# 1. Habilitar semantic memory
+smem --set learning on
+
+# 2. Adicionar conhecimento
+smem --add {
+   (<cachorro> ^nome cachorro ^tipo mamifero ^patas 4)
+   (<gato> ^nome gato ^tipo mamifero ^patas 4)
+}
+
+# 3. Inicializar estado
+sp {init
+   (state <s> ^superstate nil)
+-->
+   (<s> ^name teste)
+}

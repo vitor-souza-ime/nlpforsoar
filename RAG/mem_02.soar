@@ -1,0 +1,78 @@
+# Exemplo memória episódica
+# epmem --print N
+
+epmem --set learning on
+epmem --set trigger dc
+epmem --set database memory
+
+sp {init
+   (state <s> ^superstate nil)
+-->
+   (<s> ^name teste
+        ^fase 1)
+}
+
+# Propor operador
+sp {propose*avancar
+   (state <s> ^name teste
+              ^fase <f>)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name avancar)
+}
+
+# Aplicar fase 1
+sp {apply*fase1
+   (state <s> ^operator.name avancar
+              ^fase 1)
+-->
+   (<s> ^fase 1 - 2
+        ^evento |Acordei às 8h|)
+   (write |Fase 1: Acordei|)
+}
+
+# Aplicar fase 2
+sp {apply*fase2
+   (state <s> ^operator.name avancar
+              ^fase 2)
+-->
+   (<s> ^fase 2 - 3
+        ^evento |Tomei café às 9h|)
+   (write |Fase 2: Café|)
+}
+
+# Aplicar fase 3
+sp {apply*fase3
+   (state <s> ^operator.name avancar
+              ^fase 3)
+-->
+   (<s> ^fase 3 - 4
+        ^evento |Trabalhei às 10h|)
+   (write |Fase 3: Trabalho|)
+}
+
+# Aplicar fase 4
+sp {apply*fase4
+   (state <s> ^operator.name avancar
+              ^fase 4)
+-->
+   (<s> ^fase 4 - 5
+        ^evento |Almocei às 12h|)
+   (write |Fase 4: Almoço|)
+}
+
+# Aplicar fase 5 (dummy para registrar episódio 4)
+sp {apply*fase5
+   (state <s> ^operator.name avancar
+              ^fase 5)
+-->
+   (<s> ^fase 5 - 6)
+   (write |Finalizando...|)
+}
+
+# Parar
+sp {parar
+   (state <s> ^fase 5)
+-->
+   (halt)
+}
