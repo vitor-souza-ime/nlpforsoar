@@ -33,11 +33,8 @@ The implementation explores how symbolic cognitive systems can interact with mod
 
 ```text
 .
-├── examples/          # Example scripts and experiments
-├── soar/              # Soar productions and agents
-├── python/            # NLP and integration scripts
-├── datasets/          # Optional datasets and text files
-├── docs/              # Documentation and reports
+├── main.py            # NLP and integration scripts
+├── RAG/               # RAG files
 └── README.md
 ```
 
