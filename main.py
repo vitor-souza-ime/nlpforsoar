@@ -39,7 +39,7 @@ MAX_OUTPUT_TOKENS = 20_000
 # Replace with your API key or, preferably, use an environment variable.
 key = os.getenv("OPENROUTER_API_KEY", "YOUR_APIKEY_HERE")
 
-# Coeficientes de AT(S)
+# AT(S) coefficients
 ALPHA = 1
 BETA = 1
 GAMMA = 1
@@ -390,14 +390,14 @@ def test_soar_code(
 
     The artifact is functionally admissible (SR=1) only when all
     n_executions executions are successful. Otherwise, SR=0 and AT(S)
-    permanece indefinido.
+    remains undefined.
     """
     if not SOAR_AVAILABLE:
         return None, None, None, None, None, None, None
 
     code_len = len(code) if code else 0
     print(
-        f"\n🧪 TESTANDO {model_name} ({code_len:,} chars) - "
+        f"\n🧪 TESTING {model_name} ({code_len:,} chars) - "
         f"{n_executions} executions..."
     )
 
@@ -539,7 +539,7 @@ def test_soar_code(
 
 def build_context_from_files(soar_files, max_chars):
     print(f"\n📦 Files received: {len(soar_files)}")
-    print(f"   Limite de caracteres: {max_chars:,}")
+    print(f"   Character limit: {max_chars:,}")
 
     if not soar_files:
         return "", []
@@ -626,7 +626,7 @@ def call_openrouter_single(prompt, model_name):
     start_time = time.time()
 
     try:
-        print(f"📤 Enviando para: {model_name}")
+        print(f"📤 Sending request to: {model_name}")
         response_http = requests.post(
             OPENROUTER_URL,
             json=payload,
@@ -760,7 +760,7 @@ def call_all_models_sequential(prompt):
         }
 
         print(
-            f"✅ Resultado: model={model_name_ret}, SR={sr_binary}, "
+            f"✅ Result: model={model_name_ret}, SR={sr_binary}, "
             f"success_rate={success_rate}, AT(S)={at_score}, error={error}"
         )
 
@@ -853,7 +853,7 @@ def index():
 
                 if not code:
                     error_message = "No code available to save"
-                elif SOAR_AVAILABLE and success_rate != 100.0:
+                elif success_rate != 100.0:
                     error_message = (
                         "❌ Only functionally admissible code "
                         "(100/100 successful executions, SR=1) "
@@ -964,10 +964,7 @@ def index():
                     and sr_binary == 1
                 )
 
-                if not SOAR_AVAILABLE:
-                    can_add_to_db = True
-                    disable_reason = ""
-                elif functionally_admissible:
+                if functionally_admissible:
                     can_add_to_db = True
                     disable_reason = ""
                 else:
@@ -977,10 +974,7 @@ def index():
                         "(SR=1; 100/100 successful executions) can be added"
                     )
 
-                show_download_copy = (
-                    functionally_admissible
-                    or (not SOAR_AVAILABLE and bool(code.strip()))
-                )
+                show_download_copy = functionally_admissible
 
                 if success_rate is None:
                     stats_html = (
