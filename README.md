@@ -128,8 +128,3 @@ The 100 Soar executions characterize execution-level behavior of one fixed gener
 ## License and research use
 
 This repository is provided for academic and research use in support of reproducibility and further investigation of LLM-assisted knowledge engineering for the Soar cognitive architecture.
-
-## Author
-
-**Vitor Amadeu Souza**
-vitor.souza@ime.eb.br
