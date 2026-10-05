@@ -1,137 +1,135 @@
 # NLP for Soar
 
-Natural Language Processing integration for the Soar cognitive architecture using Python.
+Public implementation accompanying the manuscript:
 
----
+**NLP for Soar: A Hybrid Symbolic-Connectionist Architecture for Automatic Code Generation and Evaluation via the AT(S) Metric**
 
-## Overview
+## Scope
 
-This repository presents experiments and integrations between Natural Language Processing (NLP) techniques and the Soar cognitive architecture. The project aims to enable intelligent agents to process, interpret, and reason about textual inputs using external NLP models and Python-based pipelines.
+This repository contains the Python implementation used to support natural-language-driven generation, execution-based validation, and contextual reuse of Soar production-rule artifacts.
 
-The implementation explores how symbolic cognitive systems can interact with modern NLP approaches, allowing Soar agents to:
+The experimental study reported in the manuscript evaluates three canonical domains:
 
-- Interpret natural language commands
-- Extract semantic information
-- Perform text-based reasoning
-- Interact with external AI models
-- Support conversational and cognitive robotics applications
+- Water Jug Problem
+- Tower of Hanoi
+- Blocks World
 
----
+The reported results are a controlled proof of concept. They do not establish general performance in unseen Soar domains or formal verification over the complete reachable state space.
 
-## Features
+The current implementation also contains preliminary keyword-detection paths for memory-related and reinforcement-learning inputs. These paths were not part of the experimental evaluation reported in the manuscript, and no performance claims are made for them.
 
-- Integration between Python and Soar
-- NLP preprocessing pipelines
-- Text interpretation for cognitive agents
-- Support for external language models
-- Experimental cognitive robotics applications
-- Examples of symbolic and subsymbolic integration
+## Evaluation protocol
 
----
+For each generated Soar artifact, the implementation:
 
-## Repository Structure
+1. detects active productions containing `(halt)`;
+2. executes the fixed artifact in 100 separate Soar kernel runs;
+3. queries the production firing count through SML;
+4. counts a run as successful only when the goal-test halt production fires;
+5. sets binary functional admissibility `SR = 1` only when all 100 executions are successful;
+6. computes AT(S) only for artifacts with `SR = 1`.
 
-```text
-.
-├── main.py            # NLP and integration scripts
-├── RAG/               # RAG files
-└── README.md
-```
+AT(S) is therefore a success-conditioned execution-efficiency/consistency metric. It does not multiply execution cost by a fractional success rate.
 
----
+## Retrieval behavior
+
+The current RAG implementation uses deterministic domain-filtered contextual retrieval:
+
+- problem-domain detection by keyword counting;
+- file filtering by domain prefix;
+- lexicographic filename ordering;
+- concatenation up to a 200,000-character context limit.
+
+The current retrieval module does **not** perform embedding similarity, semantic ranking, chunk-level retrieval, or AT(S)-based retrieval ranking.
+
+## Models and principal settings
+
+The implementation uses OpenRouter with the following model identifiers:
+
+- `z-ai/glm-4.7`
+- `minimax/minimax-m2.1`
+- `deepseek/deepseek-v3.2`
+
+Principal settings:
+
+- temperature: `0.15`
+- maximum output: `20,000` tokens
+- maximum RAG context: `200,000` characters
+- Soar execution limit: `10,000` decision cycles
+- validation executions per generated artifact: `100`
+- interval between model requests: `15` seconds
 
 ## Requirements
 
-- Python 3.x
-- Soar Cognitive Architecture
-- NLP libraries such as:
-  - transformers
-  - nltk
-  - spacy
-  - torch
-- Soar Python Interface
+The manuscript reports Python 3.12.3 and Soar 9.6.5. Python dependencies are pinned in `requirements.txt`:
 
----
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/vitor-souza-ime/nlpforsoar.git
-cd nlpforsoar
+```text
+Flask==3.1.0
+requests==2.32.3
+scipy==1.15.1
+Werkzeug==3.1.3
+soar-sml==9.6.5
 ```
 
-Install Python dependencies:
+Install with:
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+## OpenRouter API key
 
-## Usage
-
-Run an example experiment:
+Set the API key through the environment variable:
 
 ```bash
-python examples/example.py
+export OPENROUTER_API_KEY="YOUR_KEY"
 ```
 
-Execute a Soar agent:
+On Windows PowerShell:
+
+```powershell
+$env:OPENROUTER_API_KEY="YOUR_KEY"
+```
+
+## Running the application
+
+From the repository root:
 
 ```bash
-python run_soar_agent.py
+python main.py
 ```
 
----
+The Flask application generates candidate Soar code, performs execution-based validation when Soar/SML is available, reports the binary SR result and AT(S) for admissible artifacts, and permits incorporation into the RAG knowledge base only for artifacts satisfying `SR = 1`.
 
-## Research Motivation
+## Repository structure
 
-This project investigates the intersection between:
+```text
+.
+├── main.py
+├── requirements.txt
+├── README.md
+└── RAG/
+```
 
-- Cognitive architectures
-- Artificial intelligence
-- Natural language processing
-- Symbolic reasoning
-- Embodied and cognitive robotics
+The `RAG/` directory contains canonical seeds and generated Soar artifacts used as contextual examples.
 
-The main motivation is to explore how symbolic reasoning systems such as Soar can benefit from modern NLP pipelines and Large Language Models (LLMs).
+## Reproducibility notes
 
----
+The manuscript cites code snapshot:
 
-## Applications
+```text
+cb4dfb3f05922d9c76c7b4aa4a3c119ef75f0292
+```
 
-Possible applications include:
+This snapshot corresponds to the revised implementation used for validation and revision analyses. The repository was populated after the original generation experiments. Historical provider allocation, exact per-call retrieved-file sets, and some other serving metadata were not persisted for every original API request; these limitations are explicitly reported in the manuscript.
 
-- Conversational robots
-- Intelligent assistants
-- Cognitive robotics
-- Autonomous agents
-- Human-robot interaction
-- Semantic command interpretation
+The 100 Soar executions characterize execution-level behavior of one fixed generated artifact. They are not 100 independent LLM generations and should not be interpreted as an estimate of LLM generation probability.
 
----
+## License and research use
 
-## Future Work
-
-Future developments may include:
-
-- Integration with Large Language Models (LLMs)
-- Multimodal perception
-- Speech recognition integration
-- Reinforcement learning support
-- Robotic task planning using NLP
-
----
+This repository is provided for academic and research use in support of reproducibility and further investigation of LLM-assisted knowledge engineering for the Soar cognitive architecture.
 
 ## Author
 
 **Vitor Amadeu Souza**
-
----
-
-## License
-
-This project is intended for academic and research purposes.
-
+vitor.souza@ime.eb.br
